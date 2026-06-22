@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microwave Gourmet - 초간단 전자레인지 레시피 북</title>
+    <!-- Tailwind CSS v4 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .recipe-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col">
+
+    <!-- 상단 네비게이션 바 -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-4 transition-colors">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <span class="material-icons text-white text-2xl">microwave</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+                        Microwave Gourmet
+                    </h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">1인 가구를 위한 전자레인지 초간단 요리 연구소</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- 테마 토글 버튼 -->
+                <button id="themeToggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center text-slate-600 dark:text-slate-300">
+                    <span class="material-icons text-xl" id="themeIcon">dark_mode</span>
+                </button>
+                <!-- 레시피 추가 버튼 -->
+                <button onclick="openAddModal()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium px-4 py-2 rounded-lg shadow-md shadow-amber-500/10 transition flex items-center gap-2 text-sm cursor-pointer">
+                    <span class="material-icons text-sm">add</span> 레시피 추가
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6">
+        
+        <!-- 히어로 및 필터 바 -->
+        <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-bold tracking-tight">맛있는 한 끼, 간편하게 준비하세요</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">전자레인지 하나로 완성하는 프리미엄 싱글 다이닝 레시피</p>
+            </div>
+            <!-- 카테고리 필터 -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1" id="categoryFilters">
+                <button onclick="filterCategory('all')" class="category-btn active px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-500 text-white transition shadow-sm cursor-pointer">전체</button>
+                <button onclick="filterCategory('밥/면')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">밥/면</button>
+                <button onclick="filterCategory('반찬/안주')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">반찬/안주</button>
+                <button onclick="filterCategory('디저트/간식')" class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">디저트/간식</button>
+            </div>
+        </div>
+
+        <!-- 레시피 리스트 그리드 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recipeContainer">
+            <!-- JavaScript로 카드들이 동적 로딩됩니다. -->
+        </div>
+    </main>
+
+    <!-- 하단 푸터 -->
+    <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-6 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
+        <p>&copy; 2026 Microwave Gourmet Project. All rights reserved.</p>
+        <p class="mt-1 text-slate-400 dark:text-slate-500">싱글족을 위해 최적화된 마이크로웨이브 간편 요리 솔루션</p>
+    </footer>
+
+    <!-- 1. 레시피 상세/댓글 모달 -->
+    <div id="recipeModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-800 transition-transform scale-95 duration-300" id="recipeModalContent">
+            <!-- 모달 상단 헤더 -->
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start">
+                <div>
+                    <span id="modalCategory" class="text-[10px] font-bold tracking-wider text-amber-600 dark:text-amber-400 uppercase bg-amber-500/10 px-2 py-0.5 rounded-full">카테고리</span>
+                    <h3 id="modalTitle" class="text-xl font-bold mt-2 text-slate-900 dark:text-white">레시피 제목</h3>
+                    <p id="modalDesc" class="text-xs text-slate-500 dark:text-slate-400 mt-1">레시피 설명</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="openEditModal()" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="수정">
+                        <span class="material-icons text-lg">edit</span>
+                    </button>
+                    <button onclick="deleteRecipe()" class="p-2 rounded-lg text-rose-500 hover:bg-rose-500/10 transition" title="삭제">
+                        <span class="material-icons text-lg">delete</span>
+                    </button>
+                    <button onclick="closeRecipeModal()" class="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <span class="material-icons text-xl">close</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 모달 스크롤 바디 -->
+            <div class="p-6 overflow-y-auto space-y-6 flex-1 text-sm">
+                <!-- 정보 요약 배지 -->
+                <div class="flex items-center gap-6 p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                        <span class="material-icons text-amber-500 text-lg">schedule</span>
+                        <div>
+                            <p class="text-[10px] text-slate-400">조리시간</p>
+                            <p class="font-semibold text-xs text-slate-800 dark:text-slate-200" id="modalTime">5분</p>
+                        </div>
+                    </div>
+                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-800"></div>
+                    <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                        <span class="material-icons text-amber-500 text-lg">bolt</span>
+                        <div>
+                            <p class="text-[10px] text-slate-400">난이도</p>
+                            <p class="font-semibold text-xs text-slate-800 dark:text-slate-200" id="modalLevel">쉬움</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 준비 재료 -->
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 mb-2">
+                        <span class="material-icons text-amber-500 text-base">shopping_basket</span> 필수 재료
+                    </h4>
+                    <p id="modalIngredients" class="leading-relaxed text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-slate-800 whitespace-pre-line"></p>
+                </div>
+
+                <!-- 조리 순서 -->
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 mb-2.5">
+                        <span class="material-icons text-amber-500 text-base">restaurant_menu</span> 조리 순서
+                    </h4>
+                    <ol id="modalSteps" class="space-y-3 pl-4 list-decimal marker:text-amber-500 marker:font-bold text-slate-600 dark:text-slate-300"></ol>
+                </div>
+
+                <hr class="border-slate-200 dark:border-slate-800">
+
+                <!-- 댓글 섹션 -->
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                        <span class="material-icons text-indigo-500 text-base">chat_bubble_outline</span>
+                        의견 및 댓글 (<span id="modalCommentCount">0</span>)
+                    </h4>
+                    
+                    <!-- 댓글 입력 폼 -->
+                    <div class="flex gap-2.5 items-start mb-4">
+                        <textarea id="commentInput" placeholder="이 레시피에 대한 팁이나 후기를 공유해주세요..." class="flex-1 min-h-[50px] max-h-[100px] text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-amber-500 rounded-lg p-2.5 resize-none transition text-slate-700 dark:text-slate-300"></textarea>
+                        <button onclick="addComment()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-3 rounded-lg shrink-0 transition cursor-pointer">등록</button>
+                    </div>
+
+                    <!-- 댓글 목록 -->
+                    <div id="modalComments" class="space-y-3">
+                        <!-- 동적 로드 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 레시피 등록 및 수정 모달 -->
+    <div id="editModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-800 transition-transform scale-95 duration-300">
+            <!-- 모달 헤더 -->
+            <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 id="editModalTitle" class="text-lg font-bold text-slate-900 dark:text-white">레시피 만들기</h3>
+                <button onclick="closeEditModal()" class="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <!-- 모달 바디 (폼) -->
+            <form id="recipeForm" onsubmit="saveRecipe(event)" class="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+                <input type="hidden" id="editRecipeId">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">카테고리</label>
+                        <select id="recipeCategory" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-amber-500 rounded-lg p-2.5 text-slate-700 dark:text-slate-300">
+                            <option value="밥/면">밥/면</option>
+                            <option value="반찬/안주">반찬/안주</option>
+                            <option value="디저트/간식">디저트/간식</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">조리 시간</label>
+                        <input type="text" id="recipeTime" placeholder="예: 5분" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-amber-500 rounded-lg p-2.5 text-slate-700 dark:text-slate-300">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">레시피 제목</label>
+                    <input type="text" id="recipeTitle" placeholder="예: 초간단 치즈 계란찜" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-amber-500 rounded-lg p-2.5 text-slate-700 dark:text-slate-300">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">한 줄 요약</label>
+                    <input type="text" id="recipeDesc" placeholder="예: 부드럽고 폭신폭신한 밥도둑 계란찜" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-amber-500 rounded-lg p-2.5 text-slate-700 dark:text-slate-300">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">필수 재료</label>
+                    <textarea id="recipeIngredients" placeholder="예: 계란 3개, 물 100ml, 맛소금 0.5스푼, 슬라이스 치즈 1장, 다진 파 약간" required class="w-full h-20 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-amber-500 rounded-lg p-2.5 resize-none text-slate-700 dark:text-slate-300"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">조리 방법 (각 단계는 엔터(줄바꿈)로 구분해주세요)</label>
+                    <textarea id="recipeSteps" placeholder="1단계: 컵에 계란, 물, 소금을 넣고 잘 풀어줍니다.&#10;2단계: 전자레인지에 2분 돌려줍니다.&#10;3단계: 치즈와 다진 파를 얹고 1분 더 가동하면 완성!" required class="w-full h-24 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-amber-500 rounded-lg p-2.5 resize-none text-slate-700 dark:text-slate-300"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">난이도</label>
+                    <select id="recipeLevel" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-amber-500 rounded-lg p-2.5 text-slate-700 dark:text-slate-300">
+                        <option value="초보 가능">초보 가능</option>
+                        <option value="보통">보통</option>
+                        <option value="숙련 요함">숙련 요함</option>
+                    </select>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-2">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">취소</button>
+                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-lg transition cursor-pointer">저장하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 로직 자바스크립트 -->
+    <script>
+        // 초기 기본 레시피 데이터 리스트
+        const DEFAULT_RECIPES = [
+            {
+                id: 1,
+                title: "5분 완성 컵 치즈 계란찜",
+                desc: "설거지 걱정 없는 컵 하나로 만드는 촉촉하고 짭조름한 영양 간편 반찬",
+                category: "반찬/안주",
+                time: "5분",
+                level: "초보 가능",
+                ingredients: "계란 2개, 물 80ml, 참기름 1작은술, 꽃소금 0.5작은술, 슬라이스 치즈 1장, 다진 쪽파 한꼬집",
+                steps: [
+                    "머그컵에 계란 2개, 물 80ml, 참기름, 소금을 넣고 노른자가 완전히 풀릴 때까지 포크나 거품기로 잘 섞어줍니다.",
+                    "컵 입구를 랩으로 씌우고 이쑤시개로 구멍을 3~4개 뚫어줍니다.",
+                    "전자레인지에 넣고 2분간 작동시킵니다.",
+                    "꺼내어 윗면에 슬라이스 치즈와 다진 쪽파를 얹고 랩을 씌우지 않은 상태로 30초에서 1분간 더 작동시켜 치즈를 녹여냅니다."
+                ],
+                comments: [
+                    { id: 1, text: "치즈 들어가서 진짜 고소하고 밥반찬으로 딱이에요!", date: "2026-06-22" },
+                    { id: 2, text: "물 대신 우유를 넣으면 훨씬 더 부드러워집니다. 꿀팁 추천!", date: "2026-06-22" }
+                ]
+            },
+            {
+                id: 2,
+                title: "초간단 마크정식 스타일 떡볶이",
+                desc: "편의점 재료로 단 4분 만에 끝내는 매콤달콤 치즈 폭탄 떡볶이",
+                category: "밥/면",
+                time: "4분",
+                level: "초보 가능",
+                ingredients: "시판 컵 떡볶이 1개, 삼각김밥(참치마요 추천) 1개, 스트링 치즈 2개, 모짜렐라 치즈 50g, 핫바 1개",
+                steps: [
+                    "컵 떡볶이 가이드에 따라 뜨거운 물을 붓고 소스를 섞은 후 소시지/핫바를 잘라 올립니다.",
+                    "전자레인지에 2분간 가동하여 떡을 먼저 익힙니다.",
+                    "꺼낸 떡볶이 위에 삼각김밥의 김을 떼고 밥을 올린 후 스트링치즈와 모짜렐라 치즈를 듬뿍 덮어줍니다.",
+                    "치즈가 녹을 때까지 전자레인지에 1분 30초~2분간 더 돌려 완성한 후 숟가락으로 섞어 먹습니다."
+                ],
+                comments: [
+                    { id: 1, text: "안주로 대박입니다. 핫바 대신 스팸 넣어도 맛있겠네요.", date: "2026-06-22" }
+                ]
+            },
+            {
+                id: 3,
+                title: "머그컵 브라우니 케이크",
+                desc: "오븐 없이 달콤하고 꾸덕한 초코 브라우니를 즉석에서 즐기는 디저트",
+                category: "디저트/간식",
+                time: "3분",
+                level: "보통",
+                ingredients: "밀가루(중력분) 4큰술, 설탕 3큰술, 코코아 파우더 2큰술, 녹인 버터(또는 식용유) 2큰술, 우유 3큰술, 초코칩 약간",
+                steps: [
+                    "전자레인지용 머그컵에 분량의 밀가루, 설탕, 코코아 가루를 넣고 마른 상태에서 숟가락으로 골고루 섞어줍니다.",
+                    "녹인 버터와 우유를 추가하여 덩어리가 지지 않고 매끄러운 반죽 상태가 될 때까지 잘 저어 줍니다.",
+                    "원하는 만큼 초코칩을 반죽 위에 얹어줍니다.",
+                    "전자레인지에 넣고 1분 10초~1분 20초간 돌려줍니다. 너무 많이 돌리면 딱딱해지니 겉이 살짝 촉촉할 때 멈추는 것이 핵심입니다."
+                ],
+                comments: []
+            }
+        ];
+
+        let recipes = [];
+        let currentRecipe = null;
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            // 로컬 스토리지 데이터 로드
+            const stored = localStorage.getItem('microwave_recipes');
+            if (stored) {
+                recipes = JSON.parse(stored);
+            } else {
+                recipes = DEFAULT_RECIPES;
+                localStorage.setItem('microwave_recipes', JSON.stringify(recipes));
+            }
+
+            // 시스템 다크모드 적용
+            initTheme();
+            renderRecipes();
+        });
+
+        // 테마 설정 및 토글
+        function initTheme() {
+            const isDark = localStorage.getItem('theme') === 'dark' || 
+                (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').innerText = 'light_mode';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('themeIcon').innerText = 'dark_mode';
+            }
+
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const dark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', dark ? 'dark' : 'light');
+                document.getElementById('themeIcon').innerText = dark ? 'light_mode' : 'dark_mode';
+            });
+        }
+
+        // 레시피 목록 렌더링
+        function renderRecipes(filter = 'all') {
+            const container = document.getElementById('recipeContainer');
+            container.innerHTML = '';
+
+            const filteredList = filter === 'all' 
+                ? recipes 
+                : recipes.filter(r => r.category === filter);
+
+            if (filteredList.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 text-center text-slate-400 dark:text-slate-500">
+                        <span class="material-icons text-5xl mb-3">sentiment_dissatisfied</span>
+                        <p class="text-sm">해당 카테고리에 등록된 레시피가 없습니다.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredList.forEach(r => {
+                const commentCount = r.comments ? r.comments.length : 0;
+                const card = document.createElement('div');
+                card.className = "recipe-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden cursor-pointer shadow-sm transition-all duration-300 flex flex-col justify-between";
+                card.onclick = () => openRecipeModal(r.id);
+                
+                // 임의의 음식 어울리는 아이콘 선정
+                let foodIcon = 'restaurant';
+                if (r.category === '밥/면') foodIcon = 'ramen_dining';
+                else if (r.category === '반찬/안주') foodIcon = 'dinner_dining';
+                else if (r.category === '디저트/간식') foodIcon = 'cake';
+
+                card.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase bg-amber-500/10 px-2.5 py-0.5 rounded-full">${r.category}</span>
+                            <span class="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                                <span class="material-icons text-xs text-amber-500">schedule</span> ${r.time}
+                            </span>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-1 flex items-center gap-2">
+                            <span class="material-icons text-slate-400 dark:text-slate-500 text-lg">${foodIcon}</span> ${r.title}
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">${r.desc}</p>
+                    </div>
+                    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                            <span class="material-icons text-xs text-indigo-500">chat_bubble_outline</span> 의견 ${commentCount}개
+                        </span>
+                        <span class="text-[10px] font-semibold text-slate-400 bg-slate-200/50 dark:bg-slate-800 px-2 py-0.5 rounded">${r.level}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 카테고리 필터 조작
+        function filterCategory(cat) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-white', 'shadow-sm', 'active');
+                btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+            });
+
+            const activeBtn = event.currentTarget;
+            activeBtn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+            activeBtn.classList.add('bg-amber-500', 'text-white', 'shadow-sm', 'active');
+
+            renderRecipes(cat);
+        }
+
+        // 상세 모달 열기
+        function openRecipeModal(id) {
+            const recipe = recipes.find(r => r.id === id);
+            if (!recipe) return;
+
+            currentRecipe = recipe;
+            document.getElementById('modalCategory').innerText = recipe.category;
+            document.getElementById('modalTitle').innerText = recipe.title;
+            document.getElementById('modalDesc').innerText = recipe.desc;
+            document.getElementById('modalTime').innerText = recipe.time;
+            document.getElementById('modalLevel').innerText = recipe.level;
+            document.getElementById('modalIngredients').innerText = recipe.ingredients;
+
+            // 조리단계
+            const stepsList = document.getElementById('modalSteps');
+            stepsList.innerHTML = '';
+            recipe.steps.forEach(s => {
+                const li = document.createElement('li');
+                li.className = "pb-2 leading-relaxed";
+                li.innerText = s;
+                stepsList.appendChild(li);
+            });
+
+            renderComments();
+
+            // 모달 노출 애니메이션
+            const modal = document.getElementById('recipeModal');
+            const content = document.getElementById('recipeModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        // 상세 모달 닫기
+        function closeRecipeModal() {
+            const modal = document.getElementById('recipeModal');
+            const content = document.getElementById('recipeModalContent');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentRecipe = null;
+            }, 150);
+        }
+
+        // 댓글 렌더링
+        function renderComments() {
+            const commentsContainer = document.getElementById('modalComments');
+            commentsContainer.innerHTML = '';
+
+            const comments = currentRecipe.comments || [];
+            document.getElementById('modalCommentCount').innerText = comments.length;
+
+            if (comments.length === 0) {
+                commentsContainer.innerHTML = `
+                    <p class="text-xs text-slate-400 dark:text-slate-500 py-4 text-center">아직 등록된 댓글이 없습니다. 첫 의견을 남겨보세요!</p>
+                `;
+                return;
+            }
+
+            comments.forEach(c => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-800 flex justify-between items-start";
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${c.text}</p>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-1">${c.date}</span>
+                    </div>
+                    <button onclick="deleteComment(${c.id})" class="text-[10px] text-rose-500 hover:underline ml-2 cursor-pointer">삭제</button>
+                `;
+                commentsContainer.appendChild(div);
+            });
+        }
+
+        // 댓글 추가
+        function addComment() {
+            const text = document.getElementById('commentInput').value.trim();
+            if (!text) {
+                alert('의견을 작성해 주세요!');
+                return;
+            }
+
+            const newComment = {
+                id: Date.now(),
+                text: text,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            if (!currentRecipe.comments) currentRecipe.comments = [];
+            currentRecipe.comments.push(newComment);
+
+            // 로컬 스토리지 업데이트
+            localStorage.setItem('microwave_recipes', JSON.stringify(recipes));
+            document.getElementById('commentInput').value = '';
+
+            renderComments();
+            renderRecipes(getActiveCategory());
+        }
+
+        // 댓글 삭제
+        function deleteComment(commentId) {
+            currentRecipe.comments = currentRecipe.comments.filter(c => c.id !== commentId);
+            localStorage.setItem('microwave_recipes', JSON.stringify(recipes));
+            renderComments();
+            renderRecipes(getActiveCategory());
+        }
+
+        // 활성화된 카테고리 필터 식별
+        function getActiveCategory() {
+            const activeBtn = document.querySelector('.category-btn.active');
+            return activeBtn ? activeBtn.innerText : 'all';
+        }
+
+        // 레시피 등록 및 수정 폼 모달 열기
+        function openAddModal() {
+            document.getElementById('recipeForm').reset();
+            document.getElementById('editRecipeId').value = '';
+            document.getElementById('editModalTitle').innerText = '새 레시피 등록';
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function openEditModal() {
+            if (!currentRecipe) return;
+
+            document.getElementById('editRecipeId').value = currentRecipe.id;
+            document.getElementById('recipeCategory').value = currentRecipe.category;
+            document.getElementById('recipeTitle').value = currentRecipe.title;
+            document.getElementById('recipeDesc').value = currentRecipe.desc;
+            document.getElementById('recipeIngredients').value = currentRecipe.ingredients;
+            document.getElementById('recipeSteps').value = currentRecipe.steps.join('\n');
+            document.getElementById('recipeTime').value = currentRecipe.time;
+            document.getElementById('recipeLevel').value = currentRecipe.level;
+
+            document.getElementById('editModalTitle').innerText = '레시피 수정';
+            document.getElementById('editModal').classList.remove('hidden');
+            
+            // 상세 정보 창은 잠시 닫아 둠
+            document.getElementById('recipeModal').classList.add('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        // 레시피 저장 (생성/수정)
+        function saveRecipe(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('editRecipeId').value;
+            const category = document.getElementById('recipeCategory').value;
+            const title = document.getElementById('recipeTitle').value.trim();
+            const desc = document.getElementById('recipeDesc').value.trim();
+            const ingredients = document.getElementById('recipeIngredients').value.trim();
+            const stepsText = document.getElementById('recipeSteps').value.trim();
+            const time = document.getElementById('recipeTime').value.trim();
+            const level = document.getElementById('recipeLevel').value;
+
+            // 줄바꿈으로 가공하여 단계를 배열화
+            const steps = stepsText.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+
+            if (id) {
+                // 수정 모드
+                const idx = recipes.findIndex(r => r.id === parseInt(id));
+                if (idx !== -1) {
+                    recipes[idx] = {
+                        ...recipes[idx],
+                        category, title, desc, ingredients, steps, time, level
+                    };
+                }
+            } else {
+                // 생성 모드
+                const newRecipe = {
+                    id: Date.now(),
+                    category, title, desc, ingredients, steps, time, level,
+                    comments: []
+                };
+                recipes.push(newRecipe);
+            }
+
+            localStorage.setItem('microwave_recipes', JSON.stringify(recipes));
+            closeEditModal();
+            renderRecipes(getActiveCategory());
+            
+            alert(id ? '레시피가 성공적으로 수정되었습니다.' : '새 레시피가 등록되었습니다.');
+        }
+
+        // 레시피 삭제
+        function deleteRecipe() {
+            if (!currentRecipe) return;
+            if (!confirm('이 레시피를 정말로 삭제하시겠습니까?')) return;
+
+            recipes = recipes.filter(r => r.id !== currentRecipe.id);
+            localStorage.setItem('microwave_recipes', JSON.stringify(recipes));
+            
+            closeRecipeModal();
+            renderRecipes(getActiveCategory());
+        }
+    </script>
+</body>
+</html>

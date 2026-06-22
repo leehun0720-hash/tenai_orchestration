@@ -158,6 +158,32 @@
         &copy; 2026 에이전트 오케스트라 대시보드 프로젝트. Built with Gemini & Claude Code Ecosystem.
     </footer>
 
+    <!-- 라이브 프리뷰 모달 -->
+    <div id="previewModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-transform scale-95 duration-300" id="previewModalContent">
+            <!-- 모달 헤더 -->
+            <div class="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <span class="material-icons text-emerald-400">check_circle</span>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-200">AI 에이전트 빌드 완료: Microwave Gourmet</h3>
+                        <p class="text-[11px] text-slate-500">작업 공간에 생성 및 깃허브 원격 배포가 성공적으로 완료되었습니다.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="./recipe_book.html" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-3.5 py-1.5 rounded-lg text-white font-medium transition flex items-center gap-1">
+                        <span class="material-icons text-xs">open_in_new</span> 새 창으로 열기
+                    </a>
+                    <button onclick="closePreview()" class="p-2 rounded-lg text-slate-400 hover:bg-slate-800 transition">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+            </div>
+            <!-- iframe 영역 -->
+            <iframe id="previewIframe" src="about:blank" class="w-full flex-1 bg-white border-0"></iframe>
+        </div>
+    </div>
+
     <!-- 에이전트 작동 시뮬레이션용 스크립트 -->
     <script>
         function updateAgentCard(id, status, desc, highlightClass) {
@@ -184,32 +210,49 @@
             document.getElementById('globalStatusText').innerText = "작업 진행 중...";
             document.getElementById('globalStatusText').className = "text-xs text-indigo-400 font-medium animate-pulse";
 
-            // 시뮬레이션 순차적 구동 (setTimeout 활용)
-            
+            // 아이디어 단어 분석
+            const isRecipe = input.includes('레시피') || input.includes('요리') || input.includes('음식') || input.includes('recipe') || input.includes('전자레인지');
+
+            const pmDesc = isRecipe 
+                ? '요구사항 분석 완료: 1인 가구를 위한 [초간단 전자레인지 레시피 북]의 요구 사양서 및 CRUD 기능 구조 기획 수립.'
+                : '요구사항 수집 완료: 프론트엔드 React 구조 설계 및 Tailwind 스타일링 규칙 정의서 생성 중.';
+
+            const codeDesc = isRecipe
+                ? '코드 구현 시작: HTML5 기반 LocalStorage 연동 데이터 영속화 CRUD 모듈 및 댓글 관리 자바스크립트 비즈니스 로직 구현.'
+                : 'Claude Code 엔진 가동. AI Studio 컨텍스트 버퍼를 할당하여 소스코드 모듈 및 패키지 구조 생성 중.';
+
+            const designDesc = isRecipe
+                ? 'UI/UX 검증: 다크/라이트 테마 토글, 아늑하고 따뜻한 푸드 톤 스타일링 컴포넌트 유효성 검사 및 브라우저 호환성 검증 통과.'
+                : 'Google Imagen/Veo 기반 UI 디자인 테스트 에셋 생성 완료. 가상 VS Code 인프라 내에서 인터페이스 렌더링 린트 검사 통과.';
+
+            const devopsDesc = isRecipe
+                ? '배포 승인: 로컬 빌드 파일 [recipe_book.html] 유효성 점검 통과. 깃허브 저장소 업로드 및 배포 파이프라인 최종 가동.'
+                : 'Harness CI 파이프라인 트리거 가동. 빌드 아티팩트 유효성 확인 중.';
+
             // 1단계: 기획 PM 작동
             setTimeout(() => {
-                updateAgentCard('agent-pm', '<span class="text-blue-400 font-medium animate-pulse">분석 중...</span>', '요구사항 수집 완료: 프론트엔드 React 구조 설계 및 Tailwind 스타일링 규칙 정의서 생성 중.', 'ring-blue-500/30');
+                updateAgentCard('agent-pm', '<span class="text-blue-400 font-medium animate-pulse">분석 중...</span>', pmDesc, 'ring-blue-500/30');
             }, 500);
 
             // 2단계: 코딩 에이전트 연동
             setTimeout(() => {
                 updateAgentCard('agent-pm', '<span class="text-slate-500">완료</span>', '기능 사양서 작성 완료.', 'ring-blue-500/30');
-                updateAgentCard('agent-code', '<span class="text-violet-400 font-medium animate-pulse">코딩 중...</span>', 'Claude Code 엔진 가동. AI Studio 컨텍스트 버퍼를 할당하여 소스코드 모듈 및 패키지 구조 생성 중.', 'ring-violet-500/30');
+                updateAgentCard('agent-code', '<span class="text-violet-400 font-medium animate-pulse">코딩 중...</span>', codeDesc, 'ring-violet-500/30');
             }, 3000);
 
             // 3단계: 디자인 및 테스트
             setTimeout(() => {
                 updateAgentCard('agent-code', '<span class="text-slate-500">완료</span>', '코드 아키텍처 작성 및 디버깅 완료.', 'ring-violet-500/30');
-                updateAgentCard('agent-design', '<span class="text-cyan-400 font-medium animate-pulse">검증 중...</span>', 'Google Imagen/Veo 기반 UI 디자인 테스트 에셋 생성 완료. 가상 VS Code 인프라 내에서 인터페이스 렌더링 린트 검사 통과.', 'ring-cyan-500/30');
+                updateAgentCard('agent-design', '<span class="text-cyan-400 font-medium animate-pulse">검증 중...</span>', designDesc, 'ring-cyan-500/30');
             }, 6000);
 
             // 4단계: 배포 및 하네스 파이프라인
             setTimeout(() => {
                 updateAgentCard('agent-design', '<span class="text-slate-500">완료</span>', '테스트 및 비주얼 컴포넌트 검증 완료.', 'ring-cyan-500/30');
-                updateAgentCard('agent-devops', '<span class="text-emerald-400 font-medium animate-pulse">배포 중...</span>', 'Harness CI 파이프라인 트리거 가동. 빌드 아티팩트 유효성 확인 중.', 'ring-emerald-500/30');
+                updateAgentCard('agent-devops', '<span class="text-emerald-400 font-medium animate-pulse">배포 중...</span>', devopsDesc, 'ring-emerald-500/30');
                 
                 // 클라우드 상태 UI 실시간 업데이트
-                document.getElementById('githubRepo').innerText = "eojin-korea/ai-generated-app";
+                document.getElementById('githubRepo').innerText = "leehun0720-hash/tenai_orchestration";
                 document.getElementById('githubStatus').innerHTML = '<span class="text-emerald-400 font-medium">Pushed</span>';
             }, 9000);
 
@@ -217,12 +260,49 @@
             setTimeout(() => {
                 updateAgentCard('agent-devops', '<span class="text-emerald-400">성공</span>', 'GitHub 커밋 완료 및 Netlify 엣지 네트워크 배포 가동 성공.', 'ring-emerald-500/30');
                 
-                document.getElementById('netlifyUrl').innerHTML = `<a href="#" class="text-indigo-400 hover:underline">https://eojin-ai-orchestra.netlify.app</a>`;
+                if (isRecipe) {
+                    document.getElementById('netlifyUrl').innerHTML = `<a href="javascript:void(0)" onclick="openPreview()" class="text-indigo-400 hover:underline flex items-center gap-1">https://tenai-recipe-book.netlify.app <span class="material-icons text-xs">open_in_new</span></a>`;
+                } else {
+                    document.getElementById('netlifyUrl').innerHTML = `<a href="#" class="text-indigo-400 hover:underline">https://eojin-ai-orchestra.netlify.app</a>`;
+                }
                 document.getElementById('netlifyStatus').innerHTML = '<span class="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded">Live</span>';
                 
                 document.getElementById('globalStatusText').innerText = "오케스트레이션 완료";
                 document.getElementById('globalStatusText').className = "text-xs text-emerald-400 font-medium";
+
+                // 레시피 관련 아이디어일 시 자동으로 완성 프리뷰 띄움
+                if (isRecipe) {
+                    setTimeout(() => {
+                        openPreview();
+                    }, 500);
+                }
             }, 12000);
+        }
+
+        function openPreview() {
+            const modal = document.getElementById('previewModal');
+            const content = document.getElementById('previewModalContent');
+            const iframe = document.getElementById('previewIframe');
+            
+            iframe.src = './recipe_book.html';
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closePreview() {
+            const modal = document.getElementById('previewModal');
+            const content = document.getElementById('previewModalContent');
+            const iframe = document.getElementById('previewIframe');
+            
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                iframe.src = 'about:blank';
+            }, 150);
         }
     </script>
 </body>
