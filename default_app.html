@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prototype Canvas - 생성된 가상 애플리케이션</title>
+    <!-- Tailwind CSS v4 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            background-color: #0f172a;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col justify-between">
+
+    <!-- 상단 헤더 -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <span class="material-icons text-indigo-400 text-2xl animate-spin" style="animation-duration: 4s;">rotate_right</span>
+            <div>
+                <h1 class="text-base font-bold text-slate-200" id="appTitle">AI 가상 프로토타입</h1>
+                <p class="text-[10px] text-slate-500" id="appSub">사용자 정의 아이디어를 바탕으로 자동 생성된 인터랙티브 컴포넌트</p>
+            </div>
+        </div>
+        <span class="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-0.5 rounded-full font-bold uppercase">
+            Interactive Mockup
+        </span>
+    </header>
+
+    <!-- 메인 대시보드 컴포넌트 -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        
+        <!-- 왼쪽: 아이디어 브리핑 및 아키텍처 -->
+        <section class="md:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+            <h2 class="text-sm font-semibold text-slate-300 flex items-center gap-1.5 border-b border-slate-800 pb-2">
+                <span class="material-icons text-indigo-400 text-base">info</span> AI 아키텍처 설계 브리핑
+            </h2>
+            
+            <div class="space-y-3">
+                <div class="bg-slate-950 p-3 rounded-lg border border-slate-850">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">요구사항 핵심</p>
+                    <p id="ideaBrief" class="text-xs text-slate-300 mt-1 leading-relaxed">로딩 중...</p>
+                </div>
+                
+                <div class="bg-slate-950 p-3 rounded-lg border border-slate-850 space-y-2">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">자동 배포 사양</p>
+                    <div class="text-xs text-slate-300 space-y-1">
+                        <p class="flex justify-between"><span>인프라</span> <span class="text-slate-400">AWS Lambdas + Edge</span></p>
+                        <p class="flex justify-between"><span>DB</span> <span class="text-slate-400">DynamoDB (LocalMock)</span></p>
+                        <p class="flex justify-between"><span>CSS</span> <span class="text-slate-400">Tailwind + HSL Palette</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 중앙 & 오른쪽: 대화형 프로토타입 보드 (2단) -->
+        <section class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col gap-5">
+            <h2 class="text-sm font-semibold text-slate-300 flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="flex items-center gap-1.5">
+                    <span class="material-icons text-emerald-400 text-base">widgets</span> 와이어프레임 동작 캔버스
+                </span>
+                <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/10">Active</span>
+            </h2>
+
+            <!-- 가상 컴포넌트 1: 간이 데이터 관리 (메모장/할일) -->
+            <div class="bg-slate-950 border border-slate-850 p-4 rounded-xl space-y-3">
+                <h3 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                    <span class="material-icons text-amber-500 text-sm">edit_note</span> 데이터 관리 보드 (CRUD 시뮬레이션)
+                </h3>
+                
+                <div class="flex gap-2">
+                    <input type="text" id="itemName" placeholder="저장할 항목명을 입력해 주세요..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-200">
+                    <button onclick="addItem()" class="bg-indigo-600 hover:bg-indigo-500 text-xs text-white font-bold px-4 py-2 rounded-lg cursor-pointer transition">등록</button>
+                </div>
+
+                <!-- 할일 리스트 -->
+                <div class="space-y-2 max-h-[220px] overflow-y-auto pr-1" id="itemsList">
+                    <!-- JavaScript 동적 로드 -->
+                </div>
+            </div>
+
+            <!-- 가상 컴포넌트 2: AI 피드백 챗봇 -->
+            <div class="bg-slate-950 border border-slate-850 p-4 rounded-xl space-y-3">
+                <h3 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                    <span class="material-icons text-indigo-400 text-sm">smart_toy</span> 설계 구조 피드백 봇
+                </h3>
+                <div class="bg-slate-900/50 p-3 rounded-lg text-xs leading-relaxed text-slate-400 max-h-[120px] overflow-y-auto space-y-2" id="chatArea">
+                    <p class="text-indigo-400"><span class="font-bold">AI 아키텍트:</span> 입력하신 아이디어를 기반으로 뼈대 컴포넌트를 설계하였습니다. 필요에 따라 항목을 추가하거나 삭제할 수 있으며, 이 데이터는 브라우저 저장소(LocalStorage)에 유지됩니다.</p>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="chatInput" placeholder="설계 보완이나 질문을 입력하세요..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-200" onkeydown="if(event.key==='Enter') sendChat()">
+                    <button onclick="sendChat()" class="bg-slate-850 hover:bg-slate-800 border border-slate-700 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition text-slate-300">질문</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 하단 푸터 -->
+    <footer class="border-t border-slate-800 bg-slate-950 px-6 py-4 text-center text-xs text-slate-600">
+        &copy; 2026 AI Prototype Engine. Powered by Google Antigravity Agent.
+    </footer>
+
+    <!-- 로직 자바스크립트 -->
+    <script>
+        let items = [];
+        let appIdea = "테스트용 애플리케이션";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 부모창 혹은 URL 파라미터에서 아이디어 읽기
+            const params = new URLSearchParams(window.location.search);
+            const rawIdea = params.get('idea');
+            
+            if (rawIdea) {
+                appIdea = decodeURIComponent(rawIdea);
+            } else {
+                // localStorage에서 읽기 시도
+                const savedIdea = localStorage.getItem('last_agent_idea');
+                if (savedIdea) appIdea = savedIdea;
+            }
+
+            // 첫 단어 혹은 명사 추출로 간략한 앱 타이틀 정의
+            let cleanTitle = appIdea.split('만들어')[0].split('해줘')[0].trim();
+            if (cleanTitle.length > 25) cleanTitle = cleanTitle.substring(0, 25) + '...';
+            if (!cleanTitle) cleanTitle = "사용자 정의 프로토타입";
+
+            document.getElementById('appTitle').innerText = cleanTitle;
+            document.getElementById('ideaBrief').innerText = appIdea;
+
+            // 로컬 CRUD 초기값 로드
+            const stored = localStorage.getItem('mockup_items_' + cleanTitle);
+            if (stored) {
+                items = JSON.parse(stored);
+            } else {
+                items = [
+                    { id: 1, text: "초기 컴포넌트 레이아웃 구성" },
+                    { id: 2, text: "인터랙티브 이벤트 바인딩 테스트" }
+                ];
+                localStorage.setItem('mockup_items_' + cleanTitle, JSON.stringify(items));
+            }
+
+            renderItems();
+        });
+
+        // 항목 렌더링
+        function renderItems() {
+            const list = document.getElementById('itemsList');
+            list.innerHTML = '';
+            
+            const cleanTitle = document.getElementById('appTitle').innerText;
+
+            if (items.length === 0) {
+                list.innerHTML = `
+                    <p class="text-center text-xs text-slate-500 py-6">등록된 데이터 항목이 없습니다. 새로운 레코드를 추가해 보세요!</p>
+                `;
+                return;
+            }
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs";
+                div.innerHTML = `
+                    <span class="text-slate-300 font-medium">${item.text}</span>
+                    <button onclick="removeItem(${item.id})" class="text-rose-500 hover:text-rose-400 font-bold cursor-pointer">삭제</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // 항목 추가
+        function addItem() {
+            const val = document.getElementById('itemName').value.trim();
+            if (!val) return;
+
+            const cleanTitle = document.getElementById('appTitle').innerText;
+            const newItem = {
+                id: Date.now(),
+                text: val
+            };
+
+            items.push(newItem);
+            localStorage.setItem('mockup_items_' + cleanTitle, JSON.stringify(items));
+            document.getElementById('itemName').value = '';
+            renderItems();
+
+            // AI 피드백 챗봇 자동 반응
+            appendChat("AI 아키텍트", `새로운 레코드 ["${val}"]가 저장되었습니다. LocalStorage 영속화 린팅 통과.`);
+        }
+
+        // 항목 삭제
+        function removeItem(id) {
+            const cleanTitle = document.getElementById('appTitle').innerText;
+            items = items.filter(item => item.id !== id);
+            localStorage.setItem('mockup_items_' + cleanTitle, JSON.stringify(items));
+            renderItems();
+            appendChat("AI 아키텍트", `ID ${id} 레코드가 성공적으로 제거되었습니다.`);
+        }
+
+        // 가상 챗봇 기능
+        function sendChat() {
+            const val = document.getElementById('chatInput').value.trim();
+            if (!val) return;
+
+            appendChat("사용자", val);
+            document.getElementById('chatInput').value = '';
+
+            // AI 대답 생성
+            setTimeout(() => {
+                let response = "";
+                if (val.includes('디자인') || val.includes('색상') || val.includes('UI')) {
+                    response = "설계된 템플릿의 UI는 Tailwind CSS 기반의 CSS 컴포넌트 빌트인 테마입니다. 설정 창에서 세부 스타일 프리셋을 조정할 수 있습니다.";
+                } else if (val.includes('배포') || val.includes('깃허브') || val.includes('서버')) {
+                    response = "이 프로토타입은 서버리스(Lambda) 및 정적 에지 컴퓨팅 아키텍처에 배포가 가능한 정적 번들 모듈로 패키징되어 깃허브로 동기화됩니다.";
+                } else {
+                    response = `입력하신 의견 ["${val}"]을 검토했습니다. 이 프로토타입을 실제 프로덕션 패키지로 전환하려면 코딩 에이전트에 추가적인 API 명세를 제공하는 것을 권장합니다.`;
+                }
+                appendChat("AI 아키텍트", response);
+            }, 800);
+        }
+
+        function appendChat(sender, text) {
+            const area = document.getElementById('chatArea');
+            const p = document.createElement('p');
+            if (sender === "사용자") {
+                p.innerHTML = `<span class="font-bold text-indigo-300">나:</span> ${text}`;
+            } else {
+                p.innerHTML = `<span class="font-bold text-indigo-400">${sender}:</span> ${text}`;
+            }
+            area.appendChild(p);
+            area.scrollTop = area.scrollHeight;
+        }
+    </script>
+</body>
+</html>
