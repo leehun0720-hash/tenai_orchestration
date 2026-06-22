@@ -361,7 +361,7 @@
                 updateAgentCard('agent-design', '<span class="text-slate-500">완료</span>', '테스트 및 비주얼 컴포넌트 검증 완료.', 'ring-cyan-500/30');
                 updateAgentCard('agent-devops', '<span class="text-emerald-400 font-medium animate-pulse">배포 중...</span>', devopsDesc, 'ring-emerald-500/30');
                 
-                // 클라우드 상태 UI 실시간 업데이트
+                // 깃허브 푸시 상태 UI 실시간 업데이트
                 document.getElementById('githubRepo').innerText = `${appSettings.gitUser}/tenai_orchestration`;
                 document.getElementById('githubStatus').innerHTML = '<span class="text-emerald-400 font-medium">Pushed</span>';
             }, 9000);
@@ -409,43 +409,6 @@
             iframe.src = srcUrl;
             newTabBtn.href = srcUrl;
 
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closePreview() {
-            const modal = document.getElementById('previewModal');
-            const content = document.getElementById('previewModalContent');
-            const iframe = document.getElementById('previewIframe');
-            
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                iframe.src = 'about:blank';
-            }, 150);
-        }
-    </script>
-</body>
-
-                // 레시피 관련 아이디어일 시 자동으로 완성 프리뷰 띄움
-                if (isRecipe) {
-                    setTimeout(() => {
-                        openPreview();
-                    }, 500);
-                }
-            }, 12000);
-        }
-
-        function openPreview() {
-            const modal = document.getElementById('previewModal');
-            const content = document.getElementById('previewModalContent');
-            const iframe = document.getElementById('previewIframe');
-            
-            iframe.src = './recipe_book.html';
             modal.classList.remove('hidden');
             setTimeout(() => {
                 content.classList.remove('scale-95');
